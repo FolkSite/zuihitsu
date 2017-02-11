@@ -2,8 +2,6 @@
 
 namespace App;
 
-use App\Tag;
-
 use Illuminate\Database\Eloquent\Model;
 
 /*
@@ -18,11 +16,11 @@ class Attitude extends Model
         'post', 'tag'
     );
     public $timestamps = false;
-    protected $tags;
+//    protected $tags;
 
     public function __construct()
     {
-        $this->tags = new Tag;
+    //    $this->tags = new Tag;
     }
     /*
     public function createAttitude($post_id, $tags_string) {
