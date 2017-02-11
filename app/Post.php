@@ -40,7 +40,7 @@ class Post extends Model
         ->orderBy('created_at', 'desc')
         ->get();
     }
-
+    /*
     public function getPost($id)
     {
         return $this::find($id);
@@ -56,4 +56,5 @@ class Post extends Model
         $post_edit->tags = $request->tags;
         $post_edit->save();
     }
+    */
 }

@@ -55,11 +55,9 @@ class PostController extends Controller
             'tags' => $request->tags,
         ]);
 
-        var_dump($model->id);
+        $this->createAttitude($model->id, $request->tags);
 
-        $this->attitude->createAttitude($model->id, $request->tags);
-
-//        return redirect('/posts');
+        return redirect('/posts');
     }
 
     public function destroy(Request $request, Post $post)
@@ -73,7 +71,7 @@ class PostController extends Controller
     {
         $this->authorize('edit', $post);
         return view ('posts.edit', [
-          'post' => $this->posts->getPost($post->id),
+          'post' => $this->getPost($post->id),
         ]);
     }
 
@@ -83,8 +81,79 @@ class PostController extends Controller
         /*
         * полагаю, код ниже так себе, но пока не могу сказать почему
         */
-         $this->posts->setPost($request, $post);
-         $this->tags->addTag($request->tags);
-//         return redirect('/posts');
+         $this->setPost($request, $post);
+         $this->addTag($request->tags);
+         return redirect('/posts');
+    }
+
+    public function getPost($id)
+    {
+        return Post::find($id);
+    }
+
+    public function setPost($request, $post)
+    {
+        $post_edit = Post::find($post->id);
+        $post_edit->header = $request->header;
+        $post_edit->message = $request->message;
+        $post_edit->tags = $request->tags;
+        $post_edit->save();
+    }
+
+    public function createAttitude($post_id, $tags_string)
+    {
+        /*
+        * отправляю строку с тегами функции addTag чтобы получить массив с
+        * id тегов, которые надо закрепить за id поста
+        */
+        $tags_id_arr = $this->addTag($tags_string);
+
+        foreach ($tags_id_arr as $tag_id) {
+
+            var_dump($tag_id);
+            var_dump($post_id);
+
+            /*
+            * создание строки почему-то не работает с методом create()
+            * но если заменить его на insert(), то работает
+            */
+            Attitude::create(array(
+                'post' => $post_id,
+                'tag' => $tag_id,
+            ));
+
+        }
+    }
+
+    public function addTag($tags)
+    {
+        $tags = explode(',', $tags);
+
+        $tags_return = array();
+
+        foreach ($tags as $tag) {
+            $tag = trim($tag);
+
+            if (!empty($tag)) {
+                $tag = mb_strtolower($tag);
+
+                $availability = Tag::where('name', '=', $tag)->get();
+
+                if ($availability->count() === 0) {
+                    $model = Tag::create(array(
+                        'name' => $tag,
+                    ));
+
+                    $tags_return[] = $model->id;
+                }
+
+                foreach ($availability as $key) {
+                    $tags_return[] = $key->id;
+                }
+
+            }
+
+            return $tags_return;
+        }
     }
 }

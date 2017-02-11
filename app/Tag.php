@@ -16,6 +16,7 @@ class Tag extends Model
     * функция проверяет есть ли уже такие теги в таблице и добавляет их, если нет
     * принимает @tags строку с тегами через запятую
     */
+    /*
     public function addTag($tags)
     {
         $tags = explode(',', $tags);
@@ -29,8 +30,6 @@ class Tag extends Model
                 $tag = mb_strtolower($tag);
 
                 $availability = $this::where('name', '=', $tag)->get();
-
-                var_dump($availability->count());
 
                 if ($availability->count() === 0) {
                     $model = $this::create(array(
@@ -49,4 +48,5 @@ class Tag extends Model
             return $tags_return;
         }
     }
+    */
 }
