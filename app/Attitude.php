@@ -20,36 +20,47 @@ class Attitude extends Model
     public $timestamps = false;
     protected $tags;
 
-    public function __construct()
+    public function createAttitude($post_id, $tags_string)
     {
-        $this->tags = new Tag;
-    }
 
-    public function createAttitude($post_id, $tags_string) {
-        var_dump($post_id);
-        var_dump($tags_string);
         /*
         * отправляю строку с тегами функции addTag чтобы получить массив с
         * id тегов, которые надо закрепить за id поста
         */
-        $tags_id_arr = $this->tags->addTag($tags_string);
-
-        var_dump($tags_id_arr);
+        $tags_id_arr = Tag::addTag($tags_string);
 
         foreach ($tags_id_arr as $tag_id) {
 
-            var_dump($tag_id);
-            var_dump($post_id);
-
-            /*
-            * создание строки почему-то не работает с методом create()
-            * но если заменить его на insert(), то работает
-            */
             $this::create(array(
                 'post' => $post_id,
                 'tag' => $tag_id,
             ));
 
         }
+    }
+
+    public function getTags($post_id)
+    {
+        $attitude = Attitude::where('post', '=', $post_id)->get();
+
+        $tags_id = array();
+        $tags = array();
+
+        foreach ($attitude as $key) {
+            $tags_id[] = $key->tag;
+        }
+
+        foreach ($tags_id as $tag_id) {
+             $tag_row = Tag::find($tag_id);
+             $tags[] = $tag_row->name;
+        }
+
+        return $tags;
+    }
+
+    public static function getPostsByTagId($tag_id)
+    {
+        $posts = Attitude::where('tag', '=', $tag_id)->get();
+        return $posts;
     }
 }

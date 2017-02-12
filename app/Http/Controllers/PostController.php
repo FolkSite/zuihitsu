@@ -36,9 +36,47 @@ class PostController extends Controller
 
     public function index (Request $request)
     {
-      return view ('posts.index', [
-        'posts' => $this->posts->forUser($request->user()),
-      ]);
+        $post_for_user = $this->posts->forUser($request->user());
+
+        return view ('posts.index', [
+        'posts' => $post_for_user,
+        'tags' => $this->getTags($post_for_user),
+        ]);
+    }
+
+    public function getPostsByTag(Request $request, $tag) {
+
+        $post_for_user = $this->posts->forUser($request->user());
+
+        $tag_id = Tag::getTagId($tag);
+        $posts_attitude = Attitude::getPostsByTagId($tag_id);
+        $post_by_tag = array();
+
+        /*
+        * складываю в массив $post_by_tag только те посты, которые соответствуют
+        * тегу, чтобы передать их в Вид
+        */
+        foreach ($posts_attitude as $attitude_post) {
+
+            foreach ($post_for_user as $post) {
+                if ($post->id === $attitude_post->post) {
+                    $post_by_tag[] = $post;
+                }
+            }
+        }
+
+        return view ('posts.index', [
+        'posts' => $post_by_tag,
+        'tags' => $this->getTags($post_by_tag),
+        ]);
+    }
+
+    public function getTags($posts) {
+        $tags_arr = array();
+        foreach ($posts as $post) {
+           $tags_arr[$post->id] = $this->attitude->getTags($post->id);
+        }
+        return $tags_arr;
     }
 
     public function store(Request $request)
@@ -55,11 +93,9 @@ class PostController extends Controller
             'tags' => $request->tags,
         ]);
 
-        var_dump($model->id);
-
         $this->attitude->createAttitude($model->id, $request->tags);
 
-//        return redirect('/posts');
+        return redirect('/posts');
     }
 
     public function destroy(Request $request, Post $post)
@@ -85,6 +121,6 @@ class PostController extends Controller
         */
          $this->posts->setPost($request, $post);
          $this->tags->addTag($request->tags);
-//         return redirect('/posts');
+         return redirect('/posts');
     }
 }

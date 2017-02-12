@@ -21,3 +21,5 @@ Route::delete('/post/{post}', 'PostController@destroy');
 
 Route::post('/post/edit/{post}', 'PostController@edit');
 Route::put('/post/edit/{post}', 'PostController@save');
+
+Route::get('/post/tag/{tag}', 'PostController@getPostsByTag');

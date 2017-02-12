@@ -61,10 +61,24 @@
                           {!! nl2br(e($post->message)) !!}
                   <br>
                   <br>
-                  <em>Теги: {{ $post->tags }}</em>
+
+
+                  <em>Теги:
+                      @if (array_key_exists($post->id, $tags))
+
+                          @for ($i = 0; $i < count($tags[$post->id]); $i++)
+
+                            <a href="{{url('post/tag/' . $tags[$post->id][$i])}}">{{ $tags[$post->id][$i] }}</a>
+                                @if (($i + 1) < count($tags[$post->id]))
+                                    /
+                                @endif
+
+                          @endfor
+                      @endif
+                  </em>
                   </div>
                   <div class="panel-footer">
-                      
+
                       <button type="submit" id="delete-post-{{ $post->id }}" class="btn btn-default btn-sm" onclick="event.preventDefault();
                                document.getElementById('delete-form').submit();">
                           <i class="fa fa-btn fa-trash"></i>Удалить</button>
