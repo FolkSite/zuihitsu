@@ -16,6 +16,6 @@
 1. Скопировать файлы на сервер с поддержкой SSH
 2. В папке проекта переименовать файл ".env.example" в ".env" и изменить настройки для подключения к БД
 3. Там же выполнить следуюзие команды
-    `composer install`
-    `php artisan migrate`
+    * `composer install`
+    * `php artisan migrate`
 4. Готово
