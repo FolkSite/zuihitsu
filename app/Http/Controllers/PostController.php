@@ -74,7 +74,7 @@ class PostController extends Controller
     public function getTags($posts) {
         $tags_arr = array();
         foreach ($posts as $post) {
-           $tags_arr[$post->id] = $this->attitude->getTags($post->id);
+           $tags_arr[$post->id] = $this->attitude->getTags($post->id, 'name');
         }
         return $tags_arr;
     }
@@ -90,7 +90,6 @@ class PostController extends Controller
         $model = $request->user()->posts()->create([
             'header' => $request->header,
             'message' => $request->message,
-            'tags' => $request->tags,
         ]);
 
         $this->attitude->createAttitude($model->id, $request->tags);
@@ -110,17 +109,60 @@ class PostController extends Controller
         $this->authorize('edit', $post);
         return view ('posts.edit', [
           'post' => $this->posts->getPost($post->id),
+          /*
+          * склеиваю в строку, потому что функция возвращает массив
+          */
+          'tags' => implode(', ', Attitude::getTags($post->id, 'name')),
         ]);
     }
 
     public function save(Request $request, Post $post)
     {
         $this->authorize('edit', $post);
+
+        $this->posts->setPost($request, $post);
+
         /*
-        * полагаю, код ниже так себе, но пока не могу сказать почему
+        * получаю массив с id тегов в таблице Tags которые в изменном посте
         */
-         $this->posts->setPost($request, $post);
-         $this->tags->addTag($request->tags);
-         return redirect('/posts');
+        $tags_change = $this->tags->addTag($request->tags, 'id');
+
+        /*
+        * получаю массив в котором перечислени теги соответствующие конкретному
+        * посту
+        */
+        $tags_by_post = Attitude::getTags($post->id, 'id');
+
+        /*
+        * если у поста нет тега, то он будет добавлен
+        */
+
+        $tags_new = array();
+
+        /*
+        * собираю в строку id тегов, которые не были найдены в посте до редактирования
+        */
+        foreach ($tags_change as $tag) {
+            if (array_search($tag, $tags_by_post) === FALSE) {
+                $tags_new[] = $tag;
+            }
+        }
+
+        if (!empty($tags_new)) {
+            var_dump($tags_new);
+            Attitude::createAttitude($post->id, $tags_new);
+        }
+
+        /*
+        * если тег не найден серди тегов в измененном посте, то он удаляется
+        * из поста
+        */
+        foreach ($tags_by_post as $tag) {
+            if (array_search($tag, $tags_change) === FALSE) {
+                Attitude::delAttitude($post->id, $tag);
+            }
+        }
+
+        return redirect('/posts');
     }
 }

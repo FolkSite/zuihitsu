@@ -36,7 +36,7 @@
                             <label for="post-tags" class="col-sm-2 control-label">Теги</label>
 
                             <div class="col-sm-10">
-                                <input type="text" name="tags" id="post-tags" class="form-control" value="{{ $post->tags }}">
+                                <input type="text" name="tags" id="post-tags" class="form-control" value="{{ $tags }}">
                             </div>
                         </div>
 

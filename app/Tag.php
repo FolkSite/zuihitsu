@@ -45,14 +45,15 @@ class Tag extends Model
             }
         }
 
+        /*
+        * получаю массив с id тегов в таблице Tags
+        */
         return $tags_return;
     }
 
     public static function getTagId($name)
     {
-        var_dump($name);
         $tag_id = Tag::where('name', '=', $name)->first();
-        var_dump($tag_id->id);
         return $tag_id->id;
     }
 }

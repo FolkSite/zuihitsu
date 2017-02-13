@@ -23,7 +23,9 @@ class Posts extends Migration
           $table->integer('user_id')->index();
           $table->string('header');
           $table->text('message');
+          /* теперь теги хранятся в отедльной таблице
           $table->string('tags');
+          */
           $table->timestamps();
         });
     }

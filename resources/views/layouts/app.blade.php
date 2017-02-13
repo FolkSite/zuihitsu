@@ -55,7 +55,7 @@
                         @else
                             <li>
                                 <a href="/posts">
-                                    Блог
+                                    Заметки
                                 </a>
                             </li>
                             <li class="dropdown">

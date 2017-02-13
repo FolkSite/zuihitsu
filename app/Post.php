@@ -16,7 +16,7 @@ class Post extends Model
     */
 
     protected $fillable = [
-        'header', 'message', 'tags'
+        'header', 'message'
     ];
 
     /**
@@ -48,12 +48,14 @@ class Post extends Model
 
     public function setPost($request, $post)
     {
-        var_dump($post->id);
         $post_edit = $this::find($post->id);
-        var_dump($request->message);
+
         $post_edit->header = $request->header;
         $post_edit->message = $request->message;
-        $post_edit->tags = $request->tags;
+
+
+//        $post_edit->tags = $request->tags;
+
         $post_edit->save();
     }
 }

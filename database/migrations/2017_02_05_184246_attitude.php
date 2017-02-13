@@ -16,9 +16,7 @@ class Attitude extends Migration
         Schema::create('attitude', function (Blueprint $table) {
           $table->increments('id');
           $table->integer('post');
-          /* теги хранятся в отедльной таблице
           $table->integer('tag');
-          */
         });
     }
 

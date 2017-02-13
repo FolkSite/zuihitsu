@@ -89,11 +89,11 @@
                       </form>
 
                       <button type="submit" id="{{ $post->id }}" class="btn btn-default btn-sm" onclick="event.preventDefault();
-                               document.getElementById('edit-form').submit();">
+                               document.getElementById('edit-form-{{ $post->id }}').submit();">
 
                           <i class="fa fa-btn fa-trash"></i>Изменить</button>
 
-                      <form id="edit-form" action="{{url('post/edit/' . $post->id)}}" method="POST" style="display: none;">
+                      <form id="edit-form-{{ $post->id }}" action="{{url('post/edit/' . $post->id)}}" method="POST" style="display: none;">
                           {{ csrf_field() }}
                       </form>
 
