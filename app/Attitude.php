@@ -22,7 +22,6 @@ class Attitude extends Model
 
     public static function createAttitude($post_id, $tags_id)
     {
-
         foreach ($tags_id as $tag_id) {
 
             Attitude::create(array(

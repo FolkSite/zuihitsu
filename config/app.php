@@ -176,7 +176,10 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
+        /*
+        * добавил пакет для создания миниатюр
+        */
+        Intervention\Image\ImageServiceProvider::class,
     ],
 
     /*
@@ -225,7 +228,10 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-
+        /*
+        * добавил пакет для создания миниатюр
+        */
+        'Image' => Intervention\Image\Facades\Image::class,
     ],
 
 ];

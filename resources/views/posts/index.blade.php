@@ -13,32 +13,10 @@
                     @include('common.errors')
 
                     <!-- New Task Form -->
-                    <form action="{{ url('post') }}" method="POST" class="form-horizontal">
+                    <form action="{{ url('post') }}" method="POST" class="form-horizontal" enctype="multipart/form-data">
                         {{ csrf_field() }}
-
+                        @include('posts.post_form')
                         <!-- Task Name -->
-                        <div class="form-group">
-                            <label for="post-header" class="col-sm-2 control-label">Заголовок</label>
-
-                            <div class="col-sm-10">
-                                <input type="text" name="header" id="post-name" class="form-control" value="{{ old('post') }}">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="post-message" class="col-sm-2 control-label">Пост</label>
-
-                            <div class="col-sm-10">
-                                <textarea name="message" id="post-message" class="form-control" value="{{ old('post') }}" rows="5"></textarea>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="post-tags" class="col-sm-2 control-label">Теги</label>
-
-                            <div class="col-sm-10">
-                                <input type="text" name="tags" id="post-tags" class="form-control" value="{{ old('post') }}">
-                            </div>
-                        </div>
-
                         <!-- Add Task Button -->
                         <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-6">
@@ -60,9 +38,19 @@
                   <div class="panel-body">
                           {!! nl2br(e($post->message)) !!}
                   <br>
+
+                  @if (count($images) > 0)
+                    @if (array_key_exists($post->id, $images))
+
+                        @foreach ($images[$post->id] as $img)
+
+                            <a href="{{ $img['img'] }}"><img src="{{ $img['thumbnail'] }}" alt="" class="img-thumbnail"></a>
+
+                        @endforeach
+                    @endif
+                  @endif
+
                   <br>
-
-
                   <em>Теги:
                       @if (array_key_exists($post->id, $tags))
 

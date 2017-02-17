@@ -13,33 +13,10 @@
                     @include('common.errors')
 
                     <!-- New Task Form -->
-                    <form action="{{url('post/edit/' . $post->id)}}" method="POST" class="form-horizontal">
+                    <form action="{{url('post/edit/' . $edit_post->id)}}" method="POST" class="form-horizontal">
                         {{ csrf_field() }}
                         {{ method_field('PUT') }}
-
-                        <!-- Task Name -->
-                        <div class="form-group">
-                            <label for="post-header" class="col-sm-2 control-label">Заголовок</label>
-
-                            <div class="col-sm-10">
-                                <input type="text" name="header" id="post-name" class="form-control" value="{{ $post->header }}">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="post-message" class="col-sm-2 control-label">Пост</label>
-
-                            <div class="col-sm-10">
-                                <textarea name="message" id="post-message" class="form-control" value="" rows="5">{{ $post->message }}</textarea>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="post-tags" class="col-sm-2 control-label">Теги</label>
-
-                            <div class="col-sm-10">
-                                <input type="text" name="tags" id="post-tags" class="form-control" value="{{ $tags }}">
-                            </div>
-                        </div>
-
+                        @include('posts.post_form')
                         <!-- Add Task Button -->
                         <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-6">

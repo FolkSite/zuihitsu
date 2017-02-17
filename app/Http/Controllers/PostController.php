@@ -7,6 +7,7 @@ use App\User;
 use App\Post;
 use App\Tag;
 use App\Attitude;
+use App\Image;
 
 class PostController extends Controller
 {
@@ -38,9 +39,12 @@ class PostController extends Controller
     {
         $post_for_user = $this->posts->forUser($request->user());
 
+//        var_dump(Image::getImages($request->user()->id));
+
         return view ('posts.index', [
         'posts' => $post_for_user,
         'tags' => $this->getTags($post_for_user),
+        'images' => Image::getImages($request->user()->id),
         ]);
     }
 
@@ -85,6 +89,8 @@ class PostController extends Controller
             'header' => 'max:255',
             'message' => 'required|max:10240',
             'tags' => 'max:255',
+            'images' => 'image',
+
         ]);
 
         $model = $request->user()->posts()->create([
@@ -92,7 +98,19 @@ class PostController extends Controller
             'message' => $request->message,
         ]);
 
-        $this->attitude->createAttitude($model->id, $request->tags);
+        $tags = $this->tags->addTag($request->tags);
+        $this->attitude->createAttitude($model->id, $tags);
+
+        if ($request->hasFile('images')) {
+            var_dump('Файл получен');
+            if ($request->file('images')->isValid()) {
+                Image::uploadImg($request, $model->id);
+            } else {
+                var_dump('Файл поврежден');
+            }
+        }
+
+//        $files = Storage::files($destinationPath);
 
         return redirect('/posts');
     }
@@ -108,11 +126,11 @@ class PostController extends Controller
     {
         $this->authorize('edit', $post);
         return view ('posts.edit', [
-          'post' => $this->posts->getPost($post->id),
+          'edit_post' => $this->posts->getPost($post->id),
           /*
           * склеиваю в строку, потому что функция возвращает массив
           */
-          'tags' => implode(', ', Attitude::getTags($post->id, 'name')),
+          'edit_tags' => implode(', ', Attitude::getTags($post->id, 'name')),
         ]);
     }
 
@@ -125,7 +143,7 @@ class PostController extends Controller
         /*
         * получаю массив с id тегов в таблице Tags которые в изменном посте
         */
-        $tags_change = $this->tags->addTag($request->tags, 'id');
+        $tags_change = $this->tags->addTag($request->tags);
 
         /*
         * получаю массив в котором перечислени теги соответствующие конкретному
