@@ -3,6 +3,11 @@
 @section('content')
     <div class="container">
         <div class="col-md-8 col-md-offset-2">
+            @if (isset($tags_cloud))
+                @if (count($tags_cloud) > 0)
+                    @include('posts.tags_cloud')
+                @endif
+            @endif
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <strong>Новый пост</strong>

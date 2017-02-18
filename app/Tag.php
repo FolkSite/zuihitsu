@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Attitude;
 
 class Tag extends Model
 {
@@ -54,6 +55,33 @@ class Tag extends Model
     public static function getTagId($name)
     {
         $tag_id = Tag::where('name', '=', $name)->first();
+        var_dump($tag_id->id);
         return $tag_id->id;
+    }
+
+    public static function getTagCloud()
+    {
+        $tagsArr = array();
+        $tags = Tag::all();
+
+        foreach ($tags as $tag) {
+            $tagsArr[$tag->id] = array('name' => $tag->name);
+        }
+
+        $tagsCloud = array();
+
+        foreach ($tagsArr as $id => $value) {
+            var_dump($id);
+            $posts = Attitude::where('tag', '=', $id)->get();
+            $tagsCloud[$id] = array('name' => $value['name'],
+                'count' => count($posts),
+            );
+        }
+
+        usort($tagsCloud, function($a,$b){
+            return ($b['count']-$a['count']);
+        });
+
+        return $tagsCloud;
     }
 }

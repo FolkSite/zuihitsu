@@ -39,13 +39,7 @@ class PostController extends Controller
     {
         $post_for_user = $this->posts->forUser($request->user());
 
-//        var_dump(Image::getImages($request->user()->id));
-
-        return view ('posts.index', [
-        'posts' => $post_for_user,
-        'tags' => $this->getTags($post_for_user),
-        'images' => Image::getImages($request->user()->id),
-        ]);
+        return $this->index_view_return($post_for_user, $request);
     }
 
     public function getPostsByTag(Request $request, $tag) {
@@ -69,9 +63,16 @@ class PostController extends Controller
             }
         }
 
+        return $this->index_view_return($post_by_tag, $request);
+    }
+
+    public function index_view_return($posts, $request)
+    {
         return view ('posts.index', [
-        'posts' => $post_by_tag,
-        'tags' => $this->getTags($post_by_tag),
+        'posts' => $posts,
+        'tags' => $this->getTags($posts),
+        'images' => Image::getImages($request->user()->id),
+        'tags_cloud' => Tag::getTagCloud(),
         ]);
     }
 
@@ -117,7 +118,12 @@ class PostController extends Controller
 
     public function destroy(Request $request, Post $post)
     {
+        /**
+        * необходимо чтобы картинки удалялись с диска и БД
+        *
+        */
         $this->authorize('edit', $post);
+        Attitude::delAttitudeAll($post->id);
         $post->delete();
         return redirect('/posts');
     }

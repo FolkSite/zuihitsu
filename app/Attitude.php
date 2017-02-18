@@ -35,13 +35,19 @@ class Attitude extends Model
     public static function delAttitude($post_id, $tag_id_del) {
         $attitude = Attitude::where('post', '=', $post_id)->get();
 
-        $model = new Attitude;
-
         foreach ($attitude as $key) {
             if($key->tag === $tag_id_del) {
                 $del_row = Attitude::find($key->id);
                 $del_row->delete();
             }
+        }
+    }
+
+    public static function delAttitudeAll($post_id) {
+        $attitude = Attitude::where('post', '=', $post_id)->get();
+
+        foreach ($attitude as $key) {
+            $key->delete();
         }
     }
 
