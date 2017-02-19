@@ -4,12 +4,22 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Intervention\Image\Facades\Image as ImageManager;
+use App\User;
 
 class Image extends Model
 {
     protected $fillable = [
         'post_id', 'name', 'thumbnail_name'
     ];
+    
+    /**
+    * Получить пользователя - владельца данной задачи
+    */
+
+    public function user()
+    {
+      return $this->belongTo(User::class);
+    }
 
     public static function uploadImg($request, $post_id)
     {

@@ -13,7 +13,7 @@
 
             <i class="fa fa-btn fa-trash"></i>Изменить</button>
 
-        <form id="edit-tags-cloud" action="{{ url('post/edit/cloud_tags') }}" method="POST" style="display: none;">
+        <form id="edit-tags-cloud" action="{{ url('post/edit/tags') }}" method="GET" style="display: none;">
             {{ csrf_field() }}
         </form>
 

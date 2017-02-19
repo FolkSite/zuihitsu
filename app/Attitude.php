@@ -5,6 +5,7 @@ namespace App;
 use App\Tag;
 
 use Illuminate\Database\Eloquent\Model;
+use App\User;
 
 /*
 * модель создает строку в одноименной таблице, в которой присваивает постам теги
@@ -18,13 +19,25 @@ class Attitude extends Model
         'post', 'tag'
     ];
     public $timestamps = false;
+    
+    // WTF: не знаю зачем я сделал это свойство, надо будет попробовать без него
+    // когда допилю аутентификацию
     protected $tags;
+    
+    /**
+    * Получить пользователя - владельца данной задачи
+    */
 
-    public static function createAttitude($post_id, $tags_id)
+    public function user()
+    {
+      return $this->belongTo(User::class);
+    }
+
+    public static function createAttitude($request, $post_id, $tags_id)
     {
         foreach ($tags_id as $tag_id) {
 
-            Attitude::create(array(
+            $request->user()->attitude()->create(array(
                 'post' => $post_id,
                 'tag' => $tag_id,
             ));
@@ -49,6 +62,28 @@ class Attitude extends Model
         foreach ($attitude as $key) {
             $key->delete();
         }
+    }
+    
+    /**
+     * Удаляет все отношения тегов к постам конкретного пользователя принадлежащие 
+     * определенному тегу
+     */
+    public static function delAttitudeToTag($tag) {
+        
+        
+        $attitude = Attitude::where('user_id', '=', $tag->user_id)
+                ->where('tag', '=', $tag->id)
+                ->get();
+
+        foreach ($attitude as $key) {
+            $key->delete();
+        }
+    }
+    
+    public function forUser(User $user)
+    {
+      return $this::where('user_id', $user->id)
+        ->get();
     }
 
     /*

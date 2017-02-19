@@ -40,4 +40,14 @@ class User extends Authenticatable
     {
       return $this->hasMany(Image::class);
     }
+
+    public function tags()
+    {
+      return $this->hasMany(Tag::class);
+    }
+
+    public function attitude()
+    {
+      return $this->hasMany(Attitude::class);
+    }
 }

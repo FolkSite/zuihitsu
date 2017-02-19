@@ -15,6 +15,7 @@ class Attitude extends Migration
     {
         Schema::create('attitude', function (Blueprint $table) {
           $table->increments('id');
+          $table->integer('user_id')->index();
           $table->integer('post');
           $table->integer('tag');
         });

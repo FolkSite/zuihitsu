@@ -12,6 +12,15 @@ use App\Image;
 class PostController extends Controller
 {
     /**
+    * FIXME: Строки в табллицах Attitude, Tags, и кажется Images не привязаны к
+    * конкретному пользователи, то есть данные оттуда может получить кто угодно и
+    * делать с ними что угодно. Я уже добавил это поле в миграциях соответствующих
+    * таблиц. Надо дописать код, чтобы его использовать
+    * FIXME: добавил, вроде работает. Осталось добавить проверку соответствия
+    * записи в таблице пользователю перед ее редактирвоанием
+    */
+
+    /**
     * Экземпляр PostRepository.
     *
     * @var PostRepository
@@ -99,8 +108,8 @@ class PostController extends Controller
             'message' => $request->message,
         ]);
 
-        $tags = $this->tags->addTag($request->tags);
-        $this->attitude->createAttitude($model->id, $tags);
+        $tags = $this->tags->addTag($request, $request->tags);
+        $this->attitude->createAttitude($request, $model->id, $tags);
 
         if ($request->hasFile('images')) {
             var_dump('Файл получен');
@@ -115,17 +124,38 @@ class PostController extends Controller
 
         return redirect('/posts');
     }
+    
+    /**
+     * метод удаляет пост
+     */
 
     public function destroy(Request $request, Post $post)
     {
         /**
-        * необходимо чтобы картинки удалялись с диска и БД
+        * TODO: необходимо чтобы картинки удалялись с диска и БД
         *
         */
         $this->authorize('edit', $post);
         Attitude::delAttitudeAll($post->id);
         $post->delete();
         return redirect('/posts');
+    }
+    
+    /**
+     * метод удаляет тег
+     */
+    public function destroyTag(Request $request, Tag $tag)
+    {
+        /**
+        * TODO: должны удаляться все зависимости 
+        *
+        */
+        var_dump($tag->id);
+        $this->authorize('edit', $tag);
+        $tag->delete();
+        Attitude::delAttitudeToTag($tag);
+        var_dump($request->tag);
+//        return redirect('/post/edit/tags');
     }
 
     public function edit(Request $request, Post $post)
@@ -140,6 +170,13 @@ class PostController extends Controller
         ]);
     }
 
+    public function editTags(Request $request, Post $post)
+    {
+        return view ('posts.tags_edit', [
+        'tags_cloud' => Tag::getTagCloud(),
+        ]);
+    }
+
     public function save(Request $request, Post $post)
     {
         $this->authorize('edit', $post);
@@ -149,7 +186,7 @@ class PostController extends Controller
         /*
         * получаю массив с id тегов в таблице Tags которые в изменном посте
         */
-        $tags_change = $this->tags->addTag($request->tags);
+        $tags_change = $this->tags->addTag($request, $request->tags);
 
         /*
         * получаю массив в котором перечислени теги соответствующие конкретному
@@ -174,7 +211,7 @@ class PostController extends Controller
 
         if (!empty($tags_new)) {
             var_dump($tags_new);
-            Attitude::createAttitude($post->id, $tags_new);
+            Attitude::createAttitude($request, $post->id, $tags_new);
         }
 
         /*
