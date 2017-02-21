@@ -27,7 +27,6 @@ class Attitude extends Model
     /**
     * Получить пользователя - владельца данной задачи
     */
-
     public function user()
     {
       return $this->belongTo(User::class);
@@ -56,7 +55,7 @@ class Attitude extends Model
         }
     }
 
-    public static function delAttitudeAll($post_id) {
+    public static function delAttitudeToPost($post_id) {
         $attitude = Attitude::where('post', '=', $post_id)->get();
 
         foreach ($attitude as $key) {

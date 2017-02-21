@@ -131,13 +131,29 @@ class PostController extends Controller
 
     public function destroy(Request $request, Post $post)
     {
-        /**
-        * TODO: необходимо чтобы картинки удалялись с диска и БД
-        *
-        */
+    
         $this->authorize('edit', $post);
-        Attitude::delAttitudeAll($post->id);
+
+        Attitude::delAttitudeToPost($post->id);
         $post->delete();
+
+        Image::delImagesToPost($post);
+        return redirect('/posts');
+    }
+    
+    /**
+     * Метод удаляет картинку в посте при его редактировании
+     */
+    public function destroyImage(Request $request, Image $image)
+    {        
+        $this->authorize('edit', $image);
+
+        Image::delImagesOne($image);
+        
+        /**
+         * TODO: функция должна переходить обратно на страницу с редактирование поста
+         *  в которой был вызван. Как-то надо сгенерировать POST запрос для вызова edit()
+         */
         return redirect('/posts');
     }
     
@@ -150,12 +166,10 @@ class PostController extends Controller
         * TODO: должны удаляться все зависимости 
         *
         */
-        var_dump($tag->id);
         $this->authorize('edit', $tag);
         $tag->delete();
         Attitude::delAttitudeToTag($tag);
-        var_dump($request->tag);
-//        return redirect('/post/edit/tags');
+        return redirect('/post/edit/tags');
     }
 
     public function edit(Request $request, Post $post)
@@ -167,6 +181,7 @@ class PostController extends Controller
           * склеиваю в строку, потому что функция возвращает массив
           */
           'edit_tags' => implode(', ', Attitude::getTags($post->id, 'name')),
+          'images' => Image::getImagesToPost($post),
         ]);
     }
 
@@ -210,7 +225,6 @@ class PostController extends Controller
         }
 
         if (!empty($tags_new)) {
-            var_dump($tags_new);
             Attitude::createAttitude($request, $post->id, $tags_new);
         }
 

@@ -62,6 +62,11 @@ return [
             'region' => env('AWS_REGION'),
             'bucket' => env('AWS_BUCKET'),
         ],
+        
+        'images' => [
+            'driver' => 'local',
+            'root' => base_path('public/img'),
+        ],
 
     ],
 
