@@ -4,7 +4,8 @@
     </div>
     <div class="panel-body">
         @for ($i = 0; $i < count($tags_cloud); $i++)
-          <a class="btn btn-default" role="button" href="{{ url('post/tag/' . $tags_cloud[$i]['name']) }}">{{ $tags_cloud[$i]['name'] }} <span class="badge">{{ $tags_cloud[$i]['count'] }}</span></a>
+        
+          <a class="tag_button btn btn-default" role="button" href="{{ url('post/tag/' . $tags_cloud[$i]['name']) }}">{{ $tags_cloud[$i]['name'] }} <span class="badge">{{ $tags_cloud[$i]['count'] }}</span></a>
         @endfor
     </div>
     <div class="panel-footer">

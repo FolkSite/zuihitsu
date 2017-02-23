@@ -1,0 +1,20 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Feb 23, 2017, 12:00:14 AM
+    Author     : grigory
+*/
+
+/*
+Сдандартный шрифт ларавел не умеет в кирилицу
+*/
+body {
+    font-family: Helvetica;
+}
+
+.tag_button {
+    margin: 2px 0;
+}

@@ -12,6 +12,7 @@
 
     <!-- Styles -->
     <link href="/css/app.css" rel="stylesheet">
+    <link href="/css/my_styles.css" rel="stylesheet">
 
     <!-- Scripts -->
     <script>
@@ -88,5 +89,7 @@
 
     <!-- Scripts -->
     <script src="/js/app.js"></script>
+
+    <script src="/js/my_ajax_calls.js"></script>
 </body>
 </html>

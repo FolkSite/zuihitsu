@@ -43,14 +43,73 @@ class PostController extends Controller
         $this->attitude = $attitude;
 
     }
-
-    public function index (Request $request)
+    
+    /**
+     * Показывает главную страницу блога со всеми постами
+     * @param type $page номер страницы
+     */
+    public function index (Request $request, $page = 1)
     {
-        $post_for_user = $this->posts->forUser($request->user());
+        /*
+         * вторым аргументом передается количество постов, которое требуется вывести на страницу
+         */
+        $post_for_user = $this->posts->forUser($request->user(), 0);
 
-        return $this->index_view_return($post_for_user, $request);
+        return $this->index_view_return($post_for_user, $request, $page);
+    }
+    
+    
+    /**
+    * Возвращает массив для генерации нумерации страниц
+    * @param $posts_on_page количество постов на странице
+    * @param $this_page номер текущей страницы
+    */
+    public function countPages($request, $posts_on_page, $this_page)
+    {
+        $pages = array();
+        
+        /*
+         * округляет количество страниц в большую сторону
+         */
+        $pages_count = ceil((Post::getPageCount($request->user()) / $posts_on_page));
+        
+        /*
+         * создает массив в котором ключ - номер страницы, а значение равно 'this'
+         * если это текущая страница
+         */
+        for ($index = $pages_count; $index > 0; $index--) {
+            if ((int) $index === (int) $this_page) {
+                $pages[$index] = "this";
+                $prev = $index - 1;
+                $next = $index + 1;           
+            } else {
+                $pages[$index] = "";
+            }           
+        }
+        
+        ksort($pages);
+        
+        /*
+         * если это последняя страницы, то кнопка NEXT будет равна нулю
+         * тогда ВИД делает ее неактивной
+         */
+        if($next >= $pages_count){            
+            $next = 0;
+        }
+        
+        $pagesButtons = array('buttons' => array(
+                                                'next' => $next,
+                                                'prev' => (int) $prev,
+                                            ),
+                'pages' => $pages,
+        );
+        
+        return $pagesButtons;
     }
 
+        /**
+     * Отображает все посты, которые принадлежат тегу
+     */
     public function getPostsByTag(Request $request, $tag) {
 
         $post_for_user = $this->posts->forUser($request->user());
@@ -75,13 +134,14 @@ class PostController extends Controller
         return $this->index_view_return($post_by_tag, $request);
     }
 
-    public function index_view_return($posts, $request)
+    public function index_view_return($posts, $request, $page)
     {
         return view ('posts.index', [
         'posts' => $posts,
         'tags' => $this->getTags($posts),
         'images' => Image::getImages($request->user()->id),
         'tags_cloud' => Tag::getTagCloud(),
+        'pages' => $this->countPages($request, 10, $page),
         ]);
     }
 
@@ -120,9 +180,32 @@ class PostController extends Controller
             }
         }
 
-//        $files = Storage::files($destinationPath);
-
-        return redirect('/posts');
+ //       return redirect('/posts');
+        
+        $html = '
+            <div class="panel panel-default post" style="word-break: break-word;">
+            <div class="panel-heading"><strong>Заголовок</strong></div>
+                <div class="panel-body">
+                    Сообщение
+                  <br>
+                  <br>
+                      Картинки
+                  <br>
+                <em>
+                  <br>
+                      Теги:
+                </em>
+                </div>
+                <div class="panel-footer">                      
+                    <button type="submit" id="" class="btn btn-default btn-sm">
+                        <i class="fa fa-btn fa-trash"></i>Изменить</button>
+                    <button type="submit" id="" class="btn btn-default btn-sm">
+                        <i class="fa fa-btn fa-trash"></i>Удалить</button>
+                </div>
+            </div>
+        ';
+        
+        return $html;
     }
     
     /**
@@ -133,12 +216,24 @@ class PostController extends Controller
     {
     
         $this->authorize('edit', $post);
-
+        
+        /*
+         * Удаляет теги, картинки и сам пост
+         */
         Attitude::delAttitudeToPost($post->id);
-        $post->delete();
-
-        Image::delImagesToPost($post);
+        Image::delImagesToPost($post);       
+        $post->delete(); 
+        /*
+         * 
+        Обновляет страницу. Использовался до внедрения AJAX
         return redirect('/posts');
+        */
+        
+        /*
+         * если пост удален, то AJAX запросу будет возвращен TRUE
+         */          
+        return "true";
+
     }
     
     /**

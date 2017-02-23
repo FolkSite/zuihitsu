@@ -34,18 +34,29 @@ class Post extends Model
     * @param User $user
     * @return Collection
     */
-    public function forUser(User $user)
+    public function forUser(User $user, $skip)
     {
       return $this::where('user_id', $user->id)
         ->orderBy('created_at', 'desc')
+        ->skip($skip)
+        ->take(10)
         ->get();
+    }
+    
+    /**
+     * Получает количество постов, чтобы потом посчитать количество страниц
+     */
+    public static function getPageCount(User $user)
+    {
+        return Post::where('user_id', $user->id)
+        ->count();
     }
 
     public function getPost($id)
     {
         return $this::find($id);
     }
-
+    
     public function setPost($request, $post)
     {
         $post_edit = $this::find($post->id);
