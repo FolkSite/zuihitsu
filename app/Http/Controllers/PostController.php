@@ -72,39 +72,49 @@ class PostController extends Controller
          * округляет количество страниц в большую сторону
          */
         $pages_count = ceil((Post::getPageCount($request->user()) / $posts_on_page));
+        var_dump($pages_count);
         
         /*
-         * создает массив в котором ключ - номер страницы, а значение равно 'this'
-         * если это текущая страница
+         * если количество постов меньше чем счетчик $posts_on_page, то
+         * функция вернет FALSE и ссылки на страницы не будут генерироваться
          */
-        for ($index = $pages_count; $index > 0; $index--) {
-            if ((int) $index === (int) $this_page) {
-                $pages[$index] = "this";
-                $prev = $index - 1;
-                $next = $index + 1;           
-            } else {
-                $pages[$index] = "";
-            }           
+        if ($pages_count > 1) {
+            /*
+            * создает массив в котором ключ - номер страницы, а значение равно 'this'
+            * если это текущая страница
+            */
+           for ($index = $pages_count; $index > 0; $index--) {
+               if ((int) $index === (int) $this_page) {
+                   $pages[$index] = "this";
+                   $prev = $index - 1;
+                   $next = $index + 1;           
+               } else {
+                   $pages[$index] = "";
+               }           
+           }
+
+           ksort($pages);
+
+           /*
+            * если это последняя страницы, то кнопка NEXT будет равна нулю
+            * тогда ВИД делает ее неактивной
+            */
+           if($next >= $pages_count){            
+               $next = 0;
+           }
+
+           $pagesButtons = array('buttons' => array(
+                                                   'next' => $next,
+                                                   'prev' => (int) $prev,
+                                               ),
+                   'pages' => $pages,
+           );
+
+           var_dump($pagesButtons);
+           return $pagesButtons;
         }
         
-        ksort($pages);
-        
-        /*
-         * если это последняя страницы, то кнопка NEXT будет равна нулю
-         * тогда ВИД делает ее неактивной
-         */
-        if($next >= $pages_count){            
-            $next = 0;
-        }
-        
-        $pagesButtons = array('buttons' => array(
-                                                'next' => $next,
-                                                'prev' => (int) $prev,
-                                            ),
-                'pages' => $pages,
-        );
-        
-        return $pagesButtons;
+        return $pagesButtons = false;
     }
 
         /**

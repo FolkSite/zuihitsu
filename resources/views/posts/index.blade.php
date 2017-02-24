@@ -109,7 +109,7 @@
 
             @endif
             </div>
-            @if (count($pages) > 1)
+            @if ($pages AND count($pages) > 1)
                 <nav aria-label="Page navigation">
                     <ul class="pagination">
                         @if ($pages['buttons']['prev'] > 0)
