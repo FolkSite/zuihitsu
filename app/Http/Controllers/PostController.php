@@ -180,8 +180,10 @@ class PostController extends Controller
             }
         }
 
- //       return redirect('/posts');
+        return redirect('/posts');
         
+        /*
+         * для AJAX запроса
         $html = '
             <div class="panel panel-default post" style="word-break: break-word;">
             <div class="panel-heading"><strong>Заголовок</strong></div>
@@ -206,6 +208,7 @@ class PostController extends Controller
         ';
         
         return $html;
+        */
     }
     
     /**
@@ -226,13 +229,13 @@ class PostController extends Controller
         /*
          * 
         Обновляет страницу. Использовался до внедрения AJAX
-        return redirect('/posts');
         */
-        
+        return redirect('/posts');
+                
         /*
-         * если пост удален, то AJAX запросу будет возвращен TRUE
-         */          
+         * если пост удален, то AJAX запросу будет возвращен TRUE                 
         return "true";
+         */
 
     }
     

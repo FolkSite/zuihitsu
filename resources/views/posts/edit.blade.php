@@ -45,6 +45,10 @@
                                 <button type="submit" class="btn btn-success">
                                     <i class="fa fa-btn fa-plus"></i>Сохранить
                                 </button>
+                                <button type="button" id="delete-post-button-{{ $edit_post->id }}" class="btn btn-danger" 
+                                        data-post-id="{{ $edit_post->id }}" onclick="event.preventDefault();
+                                                     document.getElementById('delete-post-form-{{ $edit_post->id }}').submit();">
+                                    <i class="fa fa-btn fa-trash"></i>Удалить</button>
                             </div>
                         </div>
                     </form>
@@ -59,6 +63,11 @@
                             </form>
                         @endforeach
                     @endif
+                    
+                    <form id="delete-post-form-{{ $edit_post->id }}" action="{{url('post/' . $edit_post->id)}}" method="POST" style="display: none;">
+                          {{ csrf_field() }}
+                          {{ method_field('DELETE') }}
+                      </form>
             
                 </div>
             </div>

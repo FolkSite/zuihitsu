@@ -3,6 +3,7 @@
 @section('content')
     <div class="container">
         <div class="col-md-8 col-md-offset-2">
+            @include('common.errors')
             <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#newPost">
                 Создать пост
             </button>
@@ -21,7 +22,7 @@
 
                         <div class="modal-body">
                             <!-- Display Validation Errors -->
-                            @include('common.errors')
+                            
 
                             <!-- New Task Form -->
                                                         <form id="createPostForm" action="{{ url('post') }}" method="POST" class="form-horizontal" enctype="multipart/form-data">
@@ -29,7 +30,7 @@
                                 @include('posts.post_form')
                                 <div class="form-group">
                                     <div class="col-sm-offset-2 col-sm-10">
-                                        <button type="button" class="btn btn-success" id="createPostButton" data-loading-text="Добавление..." autocomplete="off">
+                                        <button type="submit" class="btn btn-success" id="createPostButton" data-loading-text="Добавление..." autocomplete="off">
                                             <i class="fa fa-btn fa-plus"></i>Добавить
                                         </button>
                                     </div>
@@ -92,14 +93,14 @@
                           {{ csrf_field() }}
                       </form>
 
-                      <button type="submit" id="delete-post-button-{{ $post->id }}" class="btn btn-default btn-sm delete-post-button" 
+<!--                      <button type="submit" id="delete-post-button-{{ $post->id }}" class="btn btn-default btn-sm delete-post-button" 
                               data-post-id="{{ $post->id }}" data-loading-text="Удаление..." autocomplete="off">
                           <i class="fa fa-btn fa-trash"></i>Удалить</button>
 
                       <form id="delete-post-form-{{ $post->id }}" action="{{url('post/' . $post->id)}}" method="POST" style="display: none;">
                           {{ csrf_field() }}
                           {{ method_field('DELETE') }}
-                      </form>
+                      </form> -->
 
                   </div>
                 </div>

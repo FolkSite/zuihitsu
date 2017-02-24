@@ -5,6 +5,8 @@
  */
 
 $(document).ready(function(){
+    /*
+     * на данный момент страницы просто обновляется при добавлении поста
     $('#createPostButton').click(function(){
         
         var formData = new FormData($('#createPostForm')[0]);
@@ -34,7 +36,8 @@ $(document).ready(function(){
             });
 
     })
-    
+    */
+   
     $('.delete-post-button').click(function(){
         
         var id = $(this).data("post-id"),
@@ -47,7 +50,7 @@ $(document).ready(function(){
         console.log($(this));
         
         var $btn = $(this).button('loading');
-
+        
         $.ajax({
             type: "POST",
             processData: false,
