@@ -11,15 +11,17 @@ use App\Image;
 
 class PostController extends Controller
 {
-    /**
-    * FIXME: Строки в табллицах Attitude, Tags, и кажется Images не привязаны к
-    * конкретному пользователи, то есть данные оттуда может получить кто угодно и
-    * делать с ними что угодно. Я уже добавил это поле в миграциях соответствующих
-    * таблиц. Надо дописать код, чтобы его использовать
-    * FIXME: добавил, вроде работает. Осталось добавить проверку соответствия
-    * записи в таблице пользователю перед ее редактирвоанием
-    */
-
+    /*
+     * FIXME: В контроллере обращение идет то к статичному методу класса 'Image::getImages()',
+     * то к методу объекта, созданного с помощью класса '$this->posts->countPages()'
+     * надо заменить статичные функции на обычные и вызывать их все как методы объекта
+     * использование двух способов одновременно запутывает код
+     */
+    /*
+     * FIXME: контроллер получился очень толстым, он должен вызывать необходимые методы
+     * модели и все, то есть в моделях должна быть не только работа с БД, но и вообще
+     * по возможности вся логика обработки данных
+     */
     /**
     * Экземпляр PostRepository.
     *
@@ -28,6 +30,7 @@ class PostController extends Controller
     protected $posts;
     protected $tags;
     protected $attitude;
+    protected $post_class;
 
     /**
     * Отображение списка всех задач пользователя.
@@ -58,65 +61,6 @@ class PostController extends Controller
         return $this->index_view_return($post_for_user, $request, $page);
     }
     
-    
-    /**
-    * Возвращает массив для генерации нумерации страниц
-    * @param $posts_on_page количество постов на странице
-    * @param $this_page номер текущей страницы
-    */
-    public function countPages($request, $posts_on_page, $this_page)
-    {
-        $pages = array();
-        
-        /*
-         * округляет количество страниц в большую сторону
-         */
-        $pages_count = ceil((Post::getPageCount($request->user()) / $posts_on_page));
-        var_dump($pages_count);
-        
-        /*
-         * если количество постов меньше чем счетчик $posts_on_page, то
-         * функция вернет FALSE и ссылки на страницы не будут генерироваться
-         */
-        if ($pages_count > 1) {
-            /*
-            * создает массив в котором ключ - номер страницы, а значение равно 'this'
-            * если это текущая страница
-            */
-           for ($index = $pages_count; $index > 0; $index--) {
-               if ((int) $index === (int) $this_page) {
-                   $pages[$index] = "this";
-                   $prev = $index - 1;
-                   $next = $index + 1;           
-               } else {
-                   $pages[$index] = "";
-               }           
-           }
-
-           ksort($pages);
-
-           /*
-            * если это последняя страницы, то кнопка NEXT будет равна нулю
-            * тогда ВИД делает ее неактивной
-            */
-           if($next >= $pages_count){            
-               $next = 0;
-           }
-
-           $pagesButtons = array('buttons' => array(
-                                                   'next' => $next,
-                                                   'prev' => (int) $prev,
-                                               ),
-                   'pages' => $pages,
-           );
-
-           var_dump($pagesButtons);
-           return $pagesButtons;
-        }
-        
-        return $pagesButtons = false;
-    }
-
         /**
      * Отображает все посты, которые принадлежат тегу
      */
@@ -151,7 +95,7 @@ class PostController extends Controller
         'tags' => $this->getTags($posts),
         'images' => Image::getImages($request->user()->id),
         'tags_cloud' => Tag::getTagCloud(),
-        'pages' => $this->countPages($request, 10, $page),
+        'pages' => $this->posts->countPages($request, 10, $page),
         ]);
     }
 
